@@ -1,3 +1,4 @@
+import os.path
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -6,6 +7,8 @@ from urllib.parse import urljoin
 import csv
 from typing import NamedTuple
 import json
+
+import argparse
 
 class Item(NamedTuple):
     name: str
@@ -20,8 +23,20 @@ urls = [
     'https://items.jellyneo.net/search/?scat[]=22',
 ]
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Get some eggs')
+    parser.add_argument('--output-csv', type=argparse.FileType('w'), required=False)
+    parser.add_argument('--output-json', type=argparse.FileType('w'), required=False)
+    parser.add_argument('--image-directory', type=str, required=True)
+    parser.add_argument('url', type=str, nargs='+')
+
+    return parser.parse_args()
+
+def get_url(url):
+    return requests.get(url, headers=headers)
+
 def get_soup(url):
-    req = requests.get(url, headers=headers)
+    req = get_url(url)
     return BeautifulSoup(req.text, "html.parser")
 
 def get_rarity(url, item):
@@ -61,18 +76,39 @@ def process_url(url):
         )
     return items
 
-def write_csv(items):
-    outer = csv.writer(sys.stdout)
+def download_images(images_dir, items):
+    for item in items:
+        extension = item.img_url.split('.')[-1]
+        filename = os.path.join(images_dir, item.name + '.' + extension)
+        r = get_url(item.img_url)
+        with open(filename, 'wb') as f:
+            f.write(r.content)
+        
+
+def write_csv(file, items):
+    outer = csv.writer(file)
     outer.writerow(['name', 'url', 'rarity'])
     for item in items:
         outer.writerow(item)
 
-def write_json(items):
-    print(json.dumps(items))
+def write_json(file, items):
+    out = json.dumps(items)
+    file.write(out)
 
-stuff=[]
-for url in urls:
-    stuff.extend(process_url(url))
+def main():
+    args = parse_args()
 
+    stuff=[]
+    for url in urls:
+        stuff.extend(process_url(url))
+
+    if args.output_csv:
+        write_csv(args.output_csv, stuff)
+    if args.output_json:
+        write_json(args.output_json, stuff)
+        
+    download_images(args.image_directory, stuff)
+
+
+main()
 # write_csv(stuff)
-write_json(stuff)
