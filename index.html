@@ -27,10 +27,10 @@
       <div class="centered">
          <div id="today">
             <div class="gallery">
-               <img src="images/omelettes/Pizza Omelette.gif" />
+               <img src="images/Question-Mark-Emoji.png" />
                <div class="desc">
-                 <div class="title">Pizza Omelette</div>
-                 <div class="collect">Collect me!</div>
+                 <div class="title">Title</div>
+                 <button class="collect">Collect me!</button>
                </div>
             </div>
             <h1>Today's item</h1>
@@ -63,6 +63,9 @@
       </div>
       <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
       <script type="text/javascript">
+
+        let todaysItem = null;
+
         function weightedRandom(items) {
           const arrDeep = items.map(item => 
             [...Array(item.rarity).keys()].map(n => item)
@@ -70,6 +73,13 @@
           const arrFlat = [].concat(...arrDeep);
           const element = arrFlat[Math.floor(Math.random() * arrFlat.length)];
           return element;
+        }
+
+        function updateToday() {
+          // Update stuff
+          const product = todaysItem;
+          $("#today img").attr("src",product.image);
+          $("#today .title").text(product.name);
         }
 
         async function todaysProdudct() {
@@ -85,15 +95,77 @@
             })
           });
           const product = weightedRandom(modJ);
-          console.log("aaaaa", product);
-          
-          // Update stuff
-          $("#today img").attr("src",product.image);
-          $("#today .title").text(product.name);
-
+          todaysItem = product;
+          updateToday();
         }
+
+        function getToday() {
+          const now = new Date();
+          const today = new Date(now.toDateString());
+          return today;
+        }
+
+        function canCollectToday() {
+          const lastCollected = localStorage.getItem('lastCollected');
+          if (lastCollected == null) {
+            return true;
+          }
+          const now = new Date();
+          const today = getToday();
+          return today > lastCollected;
+        }
+
+        function viewCollection() {
+          const collection = JSON.parse(localStorage.getItem('collection') || '[]');
+          // Find div
+          const collectDiv = $("#collection");
+          // Clean everything
+          collectDiv.find("div.gallery").remove();
+          // Generate a div for every item
+          const divs = collection.map(i => {
+            const newDiv = $("<div class='gallery'><img /><div class='desc'><div class='title'></div><div class='date'></div></div></div>");
+            newDiv.find("img").attr("src", i.image);
+            newDiv.find("div.title").text(i.name);
+            newDiv.find("div.date").text("Collected on " + new Date(i.collectedAt).toDateString());
+            return newDiv;
+          });
+          // Append all divs
+          console.log("aaaa", divs);
+          divs.forEach(d => collectDiv.append(d));
+        }
+
+        function updateCollectButton() {
+          // Find collect button
+          const button = $("div#today button.collect");
+          // Enable / disable based on canCollectToday()
+          const isEnabled = canCollectToday();
+          button.attr("disabled", !isEnabled);
+          button.click(function() {collect()});
+          console.log("fffff", button);
+        }
+
+        function collect() {
+          console.log("fufufu");
+          // Add item to collection
+          let collection = JSON.parse(localStorage.getItem('collection') || '[]');
+          const item = todaysItem;
+          if (item == null) {
+            console.log("item is null");
+            return;
+          }
+          item.collectedAt = getToday();
+          collection.push(item);
+          localStorage.setItem('collection', JSON.stringify(collection));
+          viewCollection();
+          // Update last collected
+          localStorage.setItem('lastCollected', getToday());
+          updateCollectButton();
+        }
+
         function main() {
+          updateCollectButton();
           (async () => {await todaysProdudct();})();
+          viewCollection();
         }
         main();
       </script>
