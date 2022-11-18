@@ -29,8 +29,8 @@
             <div class="gallery">
                <img src="images/omelettes/Pizza Omelette.gif" />
                <div class="desc">
-                  Pizza Omelette</br>
-                  Collect me!
+                 <div class="title">Pizza Omelette</div>
+                 <div class="collect">Collect me!</div>
                </div>
             </div>
             <h1>Today's item</h1>
@@ -61,10 +61,11 @@
             </div>
          </div>
       </div>
+      <script src="https://code.jquery.com/jquery-3.6.1.slim.min.js"></script>
       <script type="text/javascript">
         function weightedRandom(items) {
           const arrDeep = items.map(item => 
-            [...Array(item[2]).keys()].map(n => item)
+            [...Array(item.rarity).keys()].map(n => item)
           );
           const arrFlat = [].concat(...arrDeep);
           const element = arrFlat[Math.floor(Math.random() * arrFlat.length)];
@@ -74,8 +75,22 @@
         async function todaysProdudct() {
           const dat = await fetch('data/omelettes.json');
           const j = await dat.json();
-          const product = weightedRandom(j);
+          const modJ = j.map(i => {
+            const imageSplit = i[1].split(".");
+            const imageExtension = "."+imageSplit[imageSplit.length-1];
+            return ({
+              name: i[0],
+              image: ("images/omelettes/"+i[0]+imageExtension),
+              rarity: i[2],
+            })
+          });
+          const product = weightedRandom(modJ);
           console.log("aaaaa", product);
+          
+          // Update stuff
+          $("#today img").attr("src",product.image);
+          $("#today .title").text(product.name);
+
         }
         function main() {
           (async () => {await todaysProdudct();})();
