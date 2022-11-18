@@ -2,12 +2,12 @@
 
 omelettes:
 	python scripts/harvest-neopets-omelettes.py 'https://items.jellyneo.net/search/?scat[]=22' \
-		--output-csv html/data/omelettes.csv \
-		--output-json html/data/omelettes.json \
-		--image-directory html/images/omelettes
+		--output-csv docs/data/omelettes.csv \
+		--output-json docs/data/omelettes.json \
+		--image-directory docs/images/omelettes
 
 server:
-	cd html && python3 -m http.server
+	cd docs && python3 -m http.server
 
 publish:
-	git subtree push --prefix html origin gh-pages
+	git subtree push --prefix docs origin gh-pages
