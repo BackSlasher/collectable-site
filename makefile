@@ -1,6 +1,6 @@
-.PHONY: omelettes server
+.PHONY: server publish
 
-omelettes:
+docs/data/omelettes:
 	mkdir -p docs/data/omelettes
 	python scripts/harvest-neopets-omelettes.py  \
 		--output-directory docs/data/omelettes/ \
