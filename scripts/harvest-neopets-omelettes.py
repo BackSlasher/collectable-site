@@ -1,4 +1,4 @@
-from base import Item, ItemFetcher
+from base import Item, ItemFetcher, main
 
 import os.path
 import re
@@ -19,12 +19,6 @@ headers = {
 urls = [
     'https://items.jellyneo.net/search/?scat[]=22',
 ]
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Get some eggs')
-    parser.add_argument('--output-directory', type=str, required=True)
-
-    return parser.parse_args()
 
 def get_url(url):
     return requests.get(url, headers=headers)
@@ -78,9 +72,4 @@ class OmeletteFetcher(ItemFetcher):
             stuff.extend(process_url(url))
         return stuff
 
-def main():
-    args = parse_args()
-    fetcher = OmeletteFetcher(args.output_directory)
-    fetcher.process()
-
-main()
+main(OmeletteFetcher)

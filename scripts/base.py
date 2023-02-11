@@ -3,6 +3,7 @@ import os
 import os.path
 import json
 import requests
+import argparse
 
 from typing import NamedTuple, List
 # import magic
@@ -53,3 +54,14 @@ class ItemFetcher(ABC):
     def process(self):
         items = self.get_items()
         write_items(items, self.destination_directory)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Get some eggs')
+    parser.add_argument('--output-directory', type=str, required=True)
+    return parser.parse_args()
+
+def main(fetcher_class):
+    args = parse_args()
+    fetcher = fetcher_class(destination_directory=args.output_directory)
+    fetcher.process()
