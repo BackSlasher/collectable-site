@@ -126,15 +126,17 @@ function updateCollectButton(todayDiv, todaysItem, collectionDiv, items) {
   button.click(function() {collect(button, todaysItem, collectionDiv,items)});
 }
 
-async function initCollection(settings) {
-  const {sourceDir} = settings;
-  const todayDiv = $(settings.todayDiv);
-  const collectionDiv = $(settings.collectionDiv);
+function initCollection(window, settings) {
+  window.onload = async () => {
+    const {sourceDir} = settings;
+    const todayDiv = $(settings.todayDiv);
+    const collectionDiv = $(settings.collectionDiv);
 
-  const items = await getItems(sourceDir);
-  const collection = JSON.parse(localStorage.getItem('collection') || '[]');
+    const items = await getItems(sourceDir);
+    const collection = JSON.parse(localStorage.getItem('collection') || '[]');
 
-  updateToday(todayDiv, items.todaysItem);
-  updateCollection(collectionDiv, items.items);
-  updateCollectButton(todayDiv, items.todaysItem, collectionDiv, items.items);
+    updateToday(todayDiv, items.todaysItem);
+    updateCollection(collectionDiv, items.items);
+    updateCollectButton(todayDiv, items.todaysItem, collectionDiv, items.items);
+  }
 }

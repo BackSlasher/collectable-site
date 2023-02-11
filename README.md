@@ -19,8 +19,8 @@ Your collection is kept in the browser.
     1. a "collection" div for showing off your collection
     1. a script reference to jquery
     1. a script reference to `collections.js`
-    1. calling `initCollection` once the page loads
-      It needs a dict with the following:
+    1. calling `initCollection(window, settings)`.
+      `settings` is a dict with the following:
         1. `sourceDir`: where the `items.json` and `images` directory live
         2. `todayDiv`: jQuery selector for the div for today's item
         3. `collectionDiv`: jQuery select for the div for the collection
