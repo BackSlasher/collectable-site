@@ -85,15 +85,13 @@
         }
 
         async function todaysProdudct() {
-          const dat = await fetch('data/omelettes.json');
+          const dat = await fetch('data/omelettes/items.json');
           const j = await dat.json();
           const modJ = j.map(i => {
-            const imageSplit = i[1].split(".");
-            const imageExtension = "."+imageSplit[imageSplit.length-1];
             return ({
-              name: i[0],
-              image: ("images/omelettes/"+i[0]+imageExtension),
-              rarity: i[2],
+              name: i.name,
+              image: ("data/omelettes/images/"+i.name),
+              rarity: i.rarity,
             })
           });
           const product = weightedRandom(modJ);

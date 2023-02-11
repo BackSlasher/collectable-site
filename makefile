@@ -1,10 +1,9 @@
 .PHONY: omelettes server
 
 omelettes:
-	python scripts/harvest-neopets-omelettes.py 'https://items.jellyneo.net/search/?scat[]=22' \
-		--output-csv docs/data/omelettes.csv \
-		--output-json docs/data/omelettes.json \
-		--image-directory docs/images/omelettes
+	mkdir -p docs/data/omelettes
+	python scripts/harvest-neopets-omelettes.py  \
+		--output-directory docs/data/omelettes/ \
 
 server:
 	cd docs && python3 -m http.server
